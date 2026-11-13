@@ -241,7 +241,7 @@ fn normalize_url(input: &str) -> String {
     }
 
     if value.contains(' ') || !value.contains('.') {
-        return format!("https://www.google.com/search?q={}", urlencoding(value));
+        return format!("https://duckduckgo.com/?q={}", urlencoding(value));
     }
 
     format!("https://{value}")
