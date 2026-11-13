@@ -84,7 +84,7 @@ impl ApplicationHandler<BrowserEvent> for BrowserApp {
 
         let proxy = self.proxy.clone();
 
-        let ui = WebViewBuilder::new()
+        let mut ui_builder = WebViewBuilder::new()
             .with_html(browser_ui_html())
             .with_ipc_handler(move |request| {
                 let message = request.body().clone();
@@ -107,7 +107,15 @@ impl ApplicationHandler<BrowserEvent> for BrowserApp {
                 }
             })
             .with_devtools(true)
-            .with_focused(false)
+            .with_focused(false);
+
+        if let Some(proxy_url) = self.config.proxy.as_deref() {
+            ui_builder = ui_builder.with_additional_browser_args(
+                format!("--proxy-server={proxy_url} --disable-features=msSmartScreenProtection"),
+            );
+        }
+
+        let ui = ui_builder
             .with_bounds(toolbar_bounds(&window))
             .build_as_child(&window)
             .expect("failed to create browser toolbar");
