@@ -194,7 +194,7 @@ impl BrowserApp {
 
         let value = serde_json::to_string(url).unwrap_or_else(|_| """".to_string());
         let script = format!(
-            "document.getElementById('address').value = {};              document.getElementById('status').textContent = 'Ready';",
+            "document.getElementById('address').value = {}; document.getElementById('status').textContent = 'Ready';",
             value
         );
 
