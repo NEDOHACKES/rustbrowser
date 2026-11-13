@@ -16,7 +16,7 @@ use wry::WebViewBuilderExtWindows;
 use crate::config::Config;
 
 const TOOLBAR_HEIGHT: u32 = 58;
-const HOME_URL: &str = "https://duckduckgo.com";
+const HOME_URL: &str = "https://example.com";
 
 #[derive(Debug)]
 enum BrowserEvent {
@@ -111,7 +111,7 @@ impl ApplicationHandler<BrowserEvent> for BrowserApp {
 
         if let Some(proxy_url) = self.config.proxy.as_deref() {
             ui_builder = ui_builder.with_additional_browser_args(
-                format!("--proxy-server={proxy_url} --disable-features=msSmartScreenProtection"),
+                format!("--proxy-server={proxy_url}"),
             );
         }
 
