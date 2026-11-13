@@ -10,6 +10,9 @@ use wry::{
     Rect, WebView, WebViewBuilder,
 };
 
+#[cfg(target_os = "windows")]
+use wry::WebViewBuilderExtWindows;
+
 use crate::config::Config;
 
 const TOOLBAR_HEIGHT: u32 = 58;
@@ -345,7 +348,7 @@ button:active { background: #3a4149; }
 <button onclick="send('back')" title="Back">←</button>
 <button onclick="send('forward')" title="Forward">→</button>
 <button onclick="send('reload')" title="Reload">↻</button>
-<input id="address" value="https://www.google.com" spellcheck="false"
+<input id="address" value="https://duckduckgo.com" spellcheck="false"
        autocomplete="off" autocapitalize="off">
 <span id="status">Ready</span>
 <script>
