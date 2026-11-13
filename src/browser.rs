@@ -13,7 +13,7 @@ use wry::{
 use crate::config::Config;
 
 const TOOLBAR_HEIGHT: u32 = 58;
-const HOME_URL: &str = "https://www.google.com";
+const HOME_URL: &str = "https://duckduckgo.com";
 
 #[derive(Debug)]
 enum BrowserEvent {
@@ -111,13 +111,21 @@ impl ApplicationHandler<BrowserEvent> for BrowserApp {
 
         let proxy = self.proxy.clone();
 
-        let page = WebViewBuilder::new()
+        let mut page_builder = WebViewBuilder::new()
             .with_url(HOME_URL)
             .with_navigation_handler(move |url| {
                 let _ = proxy.send_event(BrowserEvent::UrlChanged(url));
                 true
             })
-            .with_devtools(true)
+            .with_devtools(true);
+
+        if let Some(proxy_url) = self.config.proxy.as_deref() {
+            page_builder = page_builder.with_additional_browser_args(
+                format!("--proxy-server={proxy_url} --disable-features=msSmartScreenProtection"),
+            );
+        }
+
+        let page = page_builder
             .with_bounds(page_bounds(&window))
             .build_as_child(&window)
             .expect("failed to create web page view");
