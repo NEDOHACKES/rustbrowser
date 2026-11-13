@@ -1,6 +1,3 @@
-use std::cell::RefCell;
-use std::rc::Rc;
-
 use winit::{
     application::ApplicationHandler,
     event::WindowEvent,
@@ -26,23 +23,21 @@ impl Browser {
 
     pub fn run(self) {
         let event_loop = EventLoop::new().expect("failed to create event loop");
-        let state = BrowserState {
-            config: self.config,
-            window: None,
-            tabs: {
-                let mut tabs = TabManager::new();
-                tabs.open(Url::parse("example.com"));
-                tabs
+
+        let mut handler = BrowserHandler {
+            state: BrowserState {
+                config: self.config,
+                window: None,
+                tabs: {
+                    let mut tabs = TabManager::new();
+                    tabs.open(Url::parse("example.com"));
+                    tabs
+                },
             },
         };
 
-        let state = Rc::new(RefCell::new(state));
-        let handler = BrowserHandler {
-            state: Rc::clone(&state),
-        };
-
         event_loop
-            .run(handler)
+            .run_app(&mut handler)
             .expect("browser event loop failed");
     }
 }
@@ -54,20 +49,18 @@ struct BrowserState {
 }
 
 struct BrowserHandler {
-    state: Rc<RefCell<BrowserState>>,
+    state: BrowserState,
 }
 
 impl ApplicationHandler for BrowserHandler {
     fn resumed(&mut self, event_loop: &ActiveEventLoop) {
-        let mut state = self.state.borrow_mut();
-
-        if state.window.is_none() {
-            state.window = Some(
+        if self.state.window.is_none() {
+            self.state.window = Some(
                 BrowserWindow::create(
                     event_loop,
-                    &state.config.window_title,
-                    state.config.width,
-                    state.config.height,
+                    &self.state.config.window_title,
+                    self.state.config.width,
+                    self.state.config.height,
                 )
                 .expect("failed to create browser window"),
             );
@@ -80,9 +73,7 @@ impl ApplicationHandler for BrowserHandler {
         window_id: WindowId,
         event: WindowEvent,
     ) {
-        let mut state = self.state.borrow_mut();
-
-        let Some(window) = state.window.as_ref() else {
+        let Some(window) = self.state.window.as_ref() else {
             return;
         };
 
@@ -95,7 +86,7 @@ impl ApplicationHandler for BrowserHandler {
                 event_loop.exit();
             }
             WindowEvent::RedrawRequested => {
-                let _ = state.tabs.active();
+                let _ = self.state.tabs.active();
             }
             _ => {}
         }
