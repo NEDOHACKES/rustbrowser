@@ -6,4 +6,6 @@ license = "MIT"
 description = "Rust-first browser shell inspired by Chromium architecture."
 
 [dependencies]
+serde_json = "1.0"
 winit = "0.30"
+wry = "0.57.2"
